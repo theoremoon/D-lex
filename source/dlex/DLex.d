@@ -71,12 +71,14 @@ class LexResult {
 unittest {
     import std.uni;
 
-    auto dlex = new DLex([RuleT(Type.Int, new SelectRule([new StringRule("If"), new PredicateRule(&isAlpha)]))]);
+    auto dlex = new DLex([
+	    RuleT(Type.Int, new CharRule('I') + new PredicateRule(&isAlpha))
+    ]);
     LexResult[] res = dlex.Lex("Int");
 
-    assert (res.length == 3);
+    assert (res.length == 1);
     assert (res[0].type == Type.Int);
-    assert (res[0].str == "I");
+    assert (res[0].str == "In");
     assert (res[0].pos.p == 0);
 }
 

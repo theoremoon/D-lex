@@ -6,6 +6,16 @@ public import dlex.MatchResult,
 abstract class Rule {
     public:
 	MatchResult match(dstring source, ref Position pos);
+
+	Rule opBinary(string op)(Rule rhs) {
+	    static if (op == "+") {
+		return new SeqRule(this, rhs);
+	    }
+	    else {
+		static assert(0, "operator " ~ op ~ " not implemented");
+	    }
+	}
+
 }
 
 public import dlex.Rule.CharRule,
