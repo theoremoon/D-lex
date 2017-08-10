@@ -1,23 +1,22 @@
-module dlex.Rule.PredicateRule;
+module dlex.Rule.CharRule;
 
 import dlex.Rule;
-
 import std.conv;
 
-class PredicateRule : Rule {
+class CharRule : Rule {
     public:
-	alias PredT = bool function(dchar);
-	PredT pred;
-	this (PredT pred) {
-	    this.pred = pred;
+	dchar c;
+	this (dchar c) {
+	    this.c = c;
 	}
+
 	override MatchResult match(dstring source, ref Position pos) {
 	    auto prevPos = pos;
 	    if (pos.end(source)) {
 		return null;
 	    }
 	    auto next = pos.next(source);
-	    if (pred(next)) {
+	    if (next == c) {
 		return new MatchResult(next.to!dstring, prevPos);
 	    }
 	    return null;

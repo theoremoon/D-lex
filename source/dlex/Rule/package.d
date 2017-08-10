@@ -8,7 +8,8 @@ abstract class Rule {
 	MatchResult match(dstring source, ref Position pos);
 }
 
-public import dlex.Rule.StringRule,
+public import dlex.Rule.CharRule,
+       dlex.Rule.StringRule,
        dlex.Rule.PredicateRule,
        dlex.Rule.SeqRule,
        dlex.Rule.SelectRule,
