@@ -2,16 +2,13 @@ module dlex.DLex;
 
 import std.conv;
 
+import dlex.Position;
+import dlex.MatchResult;
+import dlex.Rule;
+
 
 enum Type {
     Int
-}
-
-struct Position { // for copy constructor
-    public:
-	int p = 0;
-	int col = 0;
-	int row = 0;
 }
 
 struct RuleT {
@@ -34,125 +31,6 @@ class DLex {
 	    }
 
 	    return new LexResult(rule.type, r.str, r.pos);
-	}
-}
-abstract class Rule {
-    public:
-	MatchResult match(dstring source, ref Position pos);
-}
-class SelectRule : Rule {
-    public:
-	Rule[] rules;
-
-	this (Rule[] rules) {
-	    this.rules = rules;
-	}
-
-	override MatchResult match(dstring source, ref Position pos) {
-	    foreach (rule; rules) {
-		auto prevPos = pos;
-		auto result = rule.match(source, pos);
-		if (result) {
-		    return result;
-		}
-		pos = prevPos;
-	    }
-	    return null;
-	}
-}
-class RepeatRule : Rule {
-    public:
-	Rule rule;
-
-	this (Rule rule) {
-	    this.rule = rule;
-	}
-
-	override MatchResult match(dstring source, ref Position pos) {
-	    auto prevPos = pos;
-	    dstring str = "";
-	    while (true) {
-		auto match = rule.match(source, pos);
-		if (! match) {
-		    break;
-		}
-		str ~= match.str;
-	    }
-	    if (str.length == 0) {
-		return null;
-	    }
-	    return new MatchResult(str, prevPos);
-	}
-}
-class SeqRule : Rule {
-    public:
-	Rule prevRule;
-	Rule postRule;
-
-	this (Rule prevRule, Rule postRule) {
-	    this.prevRule = prevRule;
-	    this.postRule = postRule;
-	}
-	override MatchResult match(dstring source, ref Position pos) {
-	    auto prevPos = pos;
-	    auto prevMatch = prevRule.match(source, pos);
-	    if (! prevMatch) {
-		return null;
-	    }
-	    auto postMatch = postRule.match(source, pos);
-	    if (! postMatch) {
-		pos = prevPos;
-		return null;
-	    }
-	    return new MatchResult(prevMatch.str ~ postMatch.str, prevPos);
-	}
-}
-class StringRule : Rule {
-    public:
-	dstring pattern;
-
-	this (dstring pattern) {
-	    this.pattern = pattern;
-	}
-	override MatchResult match(dstring source, ref Position pos) {
-	    auto prevPos = pos;
-	    if (source.length <= pos.p) {
-		return null;
-	    }
-	    if (source[pos.p..$] == this.pattern) {
-		pos.p += this.pattern.length;
-		return new MatchResult(this.pattern, prevPos);
-	    }
-	    return null;
-	}
-}
-class PredicateRule : Rule {
-    public:
-	alias PredT = bool function(dchar);
-	PredT pred;
-	this (PredT pred) {
-	    this.pred = pred;
-	}
-	override MatchResult match(dstring source, ref Position pos) {
-	    auto prevPos = pos;
-	    if (source.length <= pos.p) {
-		return null;
-	    }
-	    if (pred(source[pos.p])) {
-		pos.p += 1;
-		return new MatchResult(source[prevPos.p].to!dstring, prevPos);
-	    }
-	    return null;
-	}
-}
-class MatchResult {
-    public:
-	dstring str;
-	Position pos;
-
-	this (dstring str, Position pos) {
-	    this.str = str;
-	    this.pos = pos;
 	}
 }
 class LexResult {
