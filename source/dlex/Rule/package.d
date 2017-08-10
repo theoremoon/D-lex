@@ -16,6 +16,22 @@ abstract class Rule {
 	    }
 	}
 
+	Rule Repeat() {
+	    return new RepeatRule(this);
+	}
+}
+
+auto Char(dchar c) {
+    return new CharRule(c);
+}
+auto String(dstring str) {
+    return new StringRule(str);
+}
+auto Pred(bool function(dchar) pred) {
+    return new PredicateRule(pred); 
+}
+auto Select(Rule[] rules ...) {
+    return new SelectRule(rules);
 }
 
 public import dlex.Rule.CharRule,

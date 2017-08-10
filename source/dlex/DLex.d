@@ -72,13 +72,13 @@ unittest {
     import std.uni;
 
     auto dlex = new DLex([
-	    RuleT(Type.Int, new CharRule('I') + new PredicateRule(&isAlpha))
+	    RuleT(Type.Int, Char('I') + Pred(&isAlpha).Repeat)
     ]);
     LexResult[] res = dlex.Lex("Int");
 
     assert (res.length == 1);
     assert (res[0].type == Type.Int);
-    assert (res[0].str == "In");
+    assert (res[0].str == "Int");
     assert (res[0].pos.p == 0);
 }
 
