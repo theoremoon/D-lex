@@ -3,8 +3,8 @@ module dlex.Position;
 struct Position { // for copy constructor
     public:
 	int p = 0;
-	int col = 0;
-	int row = 0;
+	int col = 1;
+	int row = 1;
 
 	bool end(dstring src) {
 	    return p >= src.length;

@@ -5,6 +5,7 @@ public import dlex.MatchResult,
 
 abstract class Rule {
     public:
+	bool skip = false;
 	MatchResult match(dstring source, ref Position pos);
 
 	Rule opBinary(string op)(Rule rhs) {
@@ -18,6 +19,11 @@ abstract class Rule {
 
 	Rule Repeat() {
 	    return new RepeatRule(this);
+	}
+
+	Rule Skip() {
+	    this.skip = true;
+	    return this;
 	}
 }
 
