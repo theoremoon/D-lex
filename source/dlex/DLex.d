@@ -1,5 +1,8 @@
 module dlex.DLex;
 
+import std.conv;
+
+
 enum Type {
     Int
 }
@@ -54,6 +57,23 @@ class StringRule : Rule {
 	    return null;
 	}
 }
+class PredicateRule : Rule {
+    public:
+	alias PredT = bool function(dchar);
+	PredT pred;
+	this (Type type, PredT pred) {
+	    super(type);
+	    this.pred = pred;
+	}
+	override Result match(dstring source, ref Position pos) {
+	    auto prevPos = pos;
+	    if (pred(source[pos.p])) {
+		pos.p += 1;
+		return new Result(type, source[prevPos.p].to!dstring, prevPos);
+	    }
+	    return null;
+	}
+}
 class Result {
     public:
 	Type type;
@@ -68,12 +88,14 @@ class Result {
 }
 
 unittest {
-    auto dlex = new DLex(new StringRule(Type.Int, "Int"));
+    import std.uni;
+
+    auto dlex = new DLex(new PredicateRule(Type.Int, &isAlpha));
     Result res = dlex.Lex("Int");
 
     assert (res !is null);
     assert (res.type == Type.Int);
-    assert (res.str == "Int");
+    assert (res.str == "I");
     assert (res.pos.p == 0);
 }
 
