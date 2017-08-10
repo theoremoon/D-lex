@@ -8,16 +8,18 @@ Lexical analyzer implemented by D-lang.
  /
  vvvvvvvv
         </
-       </   ____
-      </   /
-  ^^^^^   /
+      </      ___/
+  ^^^^^   ___/
   \______/
 
 ```
 
 this is 
+
 ＿人人人人＿
+
 ＞　T-rex　＜
+
 ￣Y^Y^Y^Y^￣
 
 ## Usage
