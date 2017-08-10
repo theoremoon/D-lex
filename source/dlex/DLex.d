@@ -14,12 +14,12 @@ struct Position { // for copy constructor
 	int row = 0;
 }
 
+struct RuleT {
+    Type type;
+    Rule rule;
+}
 class DLex {
     public:
-	struct RuleT {
-	    Type type;
-	    Rule rule;
-	}
 
 	RuleT rule;
 	this (RuleT rule) {
@@ -39,6 +39,29 @@ class DLex {
 abstract class Rule {
     public:
 	MatchResult match(dstring source, ref Position pos);
+}
+class SeqRule : Rule {
+    public:
+	Rule prevRule;
+	Rule postRule;
+
+	this (Rule prevRule, Rule postRule) {
+	    this.prevRule = prevRule;
+	    this.postRule = postRule;
+	}
+	override MatchResult match(dstring source, ref Position pos) {
+	    auto prevPos = pos;
+	    auto prevMatch = prevRule.match(source, pos);
+	    if (! prevMatch) {
+		return null;
+	    }
+	    auto postMatch = postRule.match(source, pos);
+	    if (! postMatch) {
+		pos = prevPos;
+		return null;
+	    }
+	    return new MatchResult(prevMatch.str ~ postMatch.str, prevPos);
+	}
 }
 class StringRule : Rule {
     public:
@@ -98,12 +121,13 @@ class LexResult {
 unittest {
     import std.uni;
 
-    auto dlex = new DLex(DLex.RuleT(Type.Int, new PredicateRule(&isAlpha)));
+    auto predRule = new PredicateRule(&isAlpha);
+    auto dlex = new DLex(RuleT(Type.Int, new SeqRule(predRule, predRule)));
     LexResult res = dlex.Lex("Int");
 
     assert (res !is null);
     assert (res.type == Type.Int);
-    assert (res.str == "I");
+    assert (res.str == "In");
     assert (res.pos.p == 0);
 }
 
