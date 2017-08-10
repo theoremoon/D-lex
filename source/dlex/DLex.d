@@ -16,43 +16,42 @@ struct Position { // for copy constructor
 
 class DLex {
     public:
-	Rule rule;
-	this (Rule rule) {
+	struct RuleT {
+	    Type type;
+	    Rule rule;
+	}
+
+	RuleT rule;
+	this (RuleT rule) {
 	    this.rule = rule;
 	}
 
-	Result Lex(dstring source) {
+	LexResult Lex(dstring source) {
 	    Position pos;
-	    Result r = rule.match(source, pos);
+	    MatchResult r = rule.rule.match(source, pos);
 	    if (! r) {
 		return null;
 	    }
 
-	    return r;
+	    return new LexResult(rule.type, r.str, r.pos);
 	}
 }
 abstract class Rule {
     public:
-	Type type;
-	this (Type type) {
-	    this.type = type;
-	}
-
-	Result match(dstring source, ref Position pos);
+	MatchResult match(dstring source, ref Position pos);
 }
 class StringRule : Rule {
     public:
 	dstring pattern;
 
-	this (Type type, dstring pattern) {
-	    super(type);
+	this (dstring pattern) {
 	    this.pattern = pattern;
 	}
-	override Result match(dstring source, ref Position pos) {
+	override MatchResult match(dstring source, ref Position pos) {
 	    auto prevPos = pos;
 	    if (source[pos.p..$] == this.pattern) {
 		pos.p += this.pattern.length;
-		return new Result(type, this.pattern, prevPos);
+		return new MatchResult(this.pattern, prevPos);
 	    }
 	    return null;
 	}
@@ -61,20 +60,29 @@ class PredicateRule : Rule {
     public:
 	alias PredT = bool function(dchar);
 	PredT pred;
-	this (Type type, PredT pred) {
-	    super(type);
+	this (PredT pred) {
 	    this.pred = pred;
 	}
-	override Result match(dstring source, ref Position pos) {
+	override MatchResult match(dstring source, ref Position pos) {
 	    auto prevPos = pos;
 	    if (pred(source[pos.p])) {
 		pos.p += 1;
-		return new Result(type, source[prevPos.p].to!dstring, prevPos);
+		return new MatchResult(source[prevPos.p].to!dstring, prevPos);
 	    }
 	    return null;
 	}
 }
-class Result {
+class MatchResult {
+    public:
+	dstring str;
+	Position pos;
+
+	this (dstring str, Position pos) {
+	    this.str = str;
+	    this.pos = pos;
+	}
+}
+class LexResult {
     public:
 	Type type;
 	dstring str;
@@ -90,8 +98,8 @@ class Result {
 unittest {
     import std.uni;
 
-    auto dlex = new DLex(new PredicateRule(Type.Int, &isAlpha));
-    Result res = dlex.Lex("Int");
+    auto dlex = new DLex(DLex.RuleT(Type.Int, new PredicateRule(&isAlpha)));
+    LexResult res = dlex.Lex("Int");
 
     assert (res !is null);
     assert (res.type == Type.Int);
