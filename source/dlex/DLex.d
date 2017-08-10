@@ -40,6 +40,26 @@ abstract class Rule {
     public:
 	MatchResult match(dstring source, ref Position pos);
 }
+class SelectRule : Rule {
+    public:
+	Rule[] rules;
+
+	this (Rule[] rules) {
+	    this.rules = rules;
+	}
+
+	override MatchResult match(dstring source, ref Position pos) {
+	    foreach (rule; rules) {
+		auto prevPos = pos;
+		auto result = rule.match(source, pos);
+		if (result) {
+		    return result;
+		}
+		pos = prevPos;
+	    }
+	    return null;
+	}
+}
 class RepeatRule : Rule {
     public:
 	Rule rule;
@@ -151,13 +171,12 @@ class LexResult {
 unittest {
     import std.uni;
 
-    auto predRule = new PredicateRule(&isAlpha);
-    auto dlex = new DLex(RuleT(Type.Int, new RepeatRule(predRule)));
+    auto dlex = new DLex(RuleT(Type.Int, new SelectRule([new StringRule("If"), new PredicateRule(&isAlpha)])));
     LexResult res = dlex.Lex("Int");
 
     assert (res !is null);
     assert (res.type == Type.Int);
-    assert (res.str == "Int");
+    assert (res.str == "I");
     assert (res.pos.p == 0);
 }
 
