@@ -40,6 +40,30 @@ abstract class Rule {
     public:
 	MatchResult match(dstring source, ref Position pos);
 }
+class RepeatRule : Rule {
+    public:
+	Rule rule;
+
+	this (Rule rule) {
+	    this.rule = rule;
+	}
+
+	override MatchResult match(dstring source, ref Position pos) {
+	    auto prevPos = pos;
+	    dstring str = "";
+	    while (true) {
+		auto match = rule.match(source, pos);
+		if (! match) {
+		    break;
+		}
+		str ~= match.str;
+	    }
+	    if (str.length == 0) {
+		return null;
+	    }
+	    return new MatchResult(str, prevPos);
+	}
+}
 class SeqRule : Rule {
     public:
 	Rule prevRule;
@@ -72,6 +96,9 @@ class StringRule : Rule {
 	}
 	override MatchResult match(dstring source, ref Position pos) {
 	    auto prevPos = pos;
+	    if (source.length <= pos.p) {
+		return null;
+	    }
 	    if (source[pos.p..$] == this.pattern) {
 		pos.p += this.pattern.length;
 		return new MatchResult(this.pattern, prevPos);
@@ -88,6 +115,9 @@ class PredicateRule : Rule {
 	}
 	override MatchResult match(dstring source, ref Position pos) {
 	    auto prevPos = pos;
+	    if (source.length <= pos.p) {
+		return null;
+	    }
 	    if (pred(source[pos.p])) {
 		pos.p += 1;
 		return new MatchResult(source[prevPos.p].to!dstring, prevPos);
@@ -122,12 +152,12 @@ unittest {
     import std.uni;
 
     auto predRule = new PredicateRule(&isAlpha);
-    auto dlex = new DLex(RuleT(Type.Int, new SeqRule(predRule, predRule)));
+    auto dlex = new DLex(RuleT(Type.Int, new RepeatRule(predRule)));
     LexResult res = dlex.Lex("Int");
 
     assert (res !is null);
     assert (res.type == Type.Int);
-    assert (res.str == "In");
+    assert (res.str == "Int");
     assert (res.pos.p == 0);
 }
 
