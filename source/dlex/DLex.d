@@ -1,6 +1,8 @@
 module dlex.DLex;
 
 import std.conv;
+import std.typecons;
+import std.algorithm;
 
 import dlex.Position;
 import dlex.MatchResult;
@@ -18,19 +20,39 @@ struct RuleT {
 class DLex {
     public:
 
-	RuleT rule;
-	this (RuleT rule) {
-	    this.rule = rule;
+	RuleT[] rules;
+	this (RuleT[] rules) {
+	    this.rules = rules;
 	}
 
-	LexResult Lex(dstring source) {
+	auto Lex(dstring source) {
 	    Position pos;
-	    MatchResult r = rule.rule.match(source, pos);
-	    if (! r) {
-		return null;
+	    LexResult[] results = [];
+
+	    while (!pos.end(source)) {
+		Tuple!(MatchResult, Position, Type)[] rs = [];
+		foreach (rule; rules) {
+		    auto savePos = pos;
+		    MatchResult r = rule.rule.match(source, savePos);
+		    if (r) {
+			rs ~= tuple(r, savePos, rule.type); 
+		    }
+		}
+		if (rs.length == 0) {
+		    break;
+		}
+
+		// 最長一致なので最長のMatchResultを採用する
+		// 同じ長さならより早く見つけた（先に登録した）方を優先する
+		auto result = rs.reduce!((a,b) => (
+			(a[0].str.length >= b[0].str.length) ? a : b
+		));
+
+		results ~= new LexResult(result[2], result[0].str, pos);
+		pos = result[1];
 	    }
 
-	    return new LexResult(rule.type, r.str, r.pos);
+	    return results;
 	}
 }
 class LexResult {
@@ -49,12 +71,12 @@ class LexResult {
 unittest {
     import std.uni;
 
-    auto dlex = new DLex(RuleT(Type.Int, new SelectRule([new StringRule("If"), new PredicateRule(&isAlpha)])));
-    LexResult res = dlex.Lex("Int");
+    auto dlex = new DLex([RuleT(Type.Int, new SelectRule([new StringRule("If"), new PredicateRule(&isAlpha)]))]);
+    LexResult[] res = dlex.Lex("Int");
 
-    assert (res !is null);
-    assert (res.type == Type.Int);
-    assert (res.str == "I");
-    assert (res.pos.p == 0);
+    assert (res.length == 3);
+    assert (res[0].type == Type.Int);
+    assert (res[0].str == "I");
+    assert (res[0].pos.p == 0);
 }
 
