@@ -147,11 +147,11 @@ unittest {
     ]);
     auto rs = dlex.Lex(`
 	    int main() {
-		int i = 1;
+		int num = 1;
 		print("Start");
-		while (i < 10) {
-		    print(i);
-		    i += 1;
+		while (num < 10) {
+		    print(num);
+		    num += 1;
 		}
 	    }
     `d.strip);
