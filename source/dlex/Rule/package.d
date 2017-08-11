@@ -27,6 +27,9 @@ abstract class Rule {
 	}
 }
 
+auto Any() {
+    return new AnyRule;
+}
 auto Char(dchar c) {
     return new CharRule(c);
 }
@@ -40,7 +43,8 @@ auto Select(Rule[] rules ...) {
     return new SelectRule(rules);
 }
 
-public import dlex.Rule.CharRule,
+public import dlex.Rule.AnyRule,
+       dlex.Rule.CharRule,
        dlex.Rule.StringRule,
        dlex.Rule.PredicateRule,
        dlex.Rule.SeqRule,

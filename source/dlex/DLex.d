@@ -91,14 +91,17 @@ unittest {
             dlex.RuleT(Type.Ident, Pred(&isAlpha) + Pred(&isAlphaNum).Repeat),
             dlex.RuleT(Type.Number, Pred(&isNumber).Repeat),
             dlex.RuleT(Type.Space, Pred(&isSpace).Skip),
+            dlex.RuleT(Type.Symbol, Any),
     ]);
-    auto rs = dlex.Lex("Int 123");
+    auto rs = dlex.Lex("Int 123 *");
 
-    assert(rs.length == 2);
+    assert(rs.length == 3);
     assert(rs[0].str == "Int");
     assert(rs[0].pos.col == 1);
     assert(rs[1].str == "123");
     assert(rs[1].pos.col == 5);
+    assert(rs[2].str == "*");
+    assert(rs[2].pos.col == 9);
 
     dlex.Rules([
 	    dlex.RuleT(Type.Symbol, Char('>')),
