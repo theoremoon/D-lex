@@ -20,6 +20,7 @@ class PredicateRule : Rule {
 	    if (pred(next)) {
 		return new MatchResult(next.to!dstring, prevPos);
 	    }
+	    pos = prevPos;
 	    return null;
 	}
 }
