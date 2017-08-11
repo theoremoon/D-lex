@@ -118,3 +118,60 @@ unittest {
     assert(rs[6].str == ">");
 }
 
+
+unittest {
+    import std.uni, std.string;
+    enum Type {
+	Space,
+	Newline,
+	Number,
+	Identifier,
+	String,
+	Symbol,
+    }
+    auto dlex = new DLex!(Type);
+    dlex.Rules([
+	    dlex.RuleT(Type.Space, Select(Char(' '), Char('\t')).Skip),
+	    dlex.RuleT(Type.Newline, Select(Char('\n'), Char(';')).Repeat),
+	    dlex.RuleT(Type.Number, Pred(&isNumber).Repeat),
+	    dlex.RuleT(Type.Identifier, Pred((c) => (c == '_' || c.isAlpha))+Pred((c) => (c == '_' || c.isAlphaNum)).Repeat),
+	    dlex.RuleT(Type.String, Char('"')+Pred((c) => c != '"').Repeat+Char('"')),
+	    dlex.RuleT(Type.Symbol, Char('=')),
+	    dlex.RuleT(Type.Symbol, Char('+')),
+	    dlex.RuleT(Type.Symbol, Char('<')),
+	    dlex.RuleT(Type.Symbol, String("+=")),
+	    dlex.RuleT(Type.Symbol, Char('{')),
+	    dlex.RuleT(Type.Symbol, Char('}')),
+	    dlex.RuleT(Type.Symbol, Char('(')),
+	    dlex.RuleT(Type.Symbol, Char(')')),
+    ]);
+    auto rs = dlex.Lex(`
+	    int main() {
+		int i = 1;
+		print("Start");
+		while (i < 10) {
+		    print(i);
+		    i += 1;
+		}
+	    }
+    `d.strip);
+
+    assert(rs[0].type == Type.Identifier);
+    assert(rs[0].str == "int");
+    assert(rs[2].type == Type.Symbol);
+    assert(rs[2].str == "(");
+    assert(rs[4].type == Type.Symbol);
+    assert(rs[4].str == "{");
+    assert(rs[5].type == Type.Newline);
+    assert(rs[5].str == "\n");
+    assert(rs[8].type == Type.Symbol);
+    assert(rs[8].str == "=");
+    assert(rs[9].type == Type.Number);
+    assert(rs[9].str == "1");
+    assert(rs[10].type == Type.Newline);
+    assert(rs[10].str == ";\n");
+    assert(rs[13].type == Type.String);
+    assert(rs[13].str == "\"Start\"");
+    assert(rs[30].type == Type.Symbol);
+    assert(rs[30].str == "+=");
+}
