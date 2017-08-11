@@ -6,7 +6,25 @@ public import dlex.MatchResult,
 abstract class Rule {
     public:
 	bool skip = false;
+	alias MatchFuncT = MatchResult delegate(MatchResult, dstring, ref Position);
+	MatchFuncT matchfunc; 
+	this() {
+	    matchfunc = null;
+	}
+
 	MatchResult match(dstring source, ref Position pos);
+	MatchResult match2(dstring source, ref Position pos) {
+	    auto r = match(source, pos);
+	    if (matchfunc) {
+		auto save = pos;
+		auto r2 = matchfunc(r, source, pos);
+		if (r2) {
+		    return r2;
+		}
+		pos = save;
+	    }
+	    return r;
+	}
 
 	Rule opBinary(string op)(Rule rhs) {
 	    static if (op == "+") {
@@ -23,6 +41,11 @@ abstract class Rule {
 
 	Rule Skip() {
 	    this.skip = true;
+	    return this;
+	}
+
+	Rule Then(MatchFuncT f) {
+	    matchfunc = f;
 	    return this;
 	}
 }
