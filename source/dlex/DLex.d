@@ -38,7 +38,7 @@ template DLex(Type) {
 		    foreach (rule; rules) {
 			auto savePos = pos;
 			MatchResult r = rule.rule.match(source, savePos);
-			if (r) {
+			if (r && r.str.length > 0) { // 0文字でマッチし得る
 			    rs ~= Matched(r, savePos, rule.type, rule.rule.skip); 
 			}
 		    }
@@ -147,11 +147,11 @@ unittest {
     ]);
     auto rs = dlex.Lex(`
 	    int main() {
-		int num = 1;
+		int i = 1;
 		print("Start");
-		while (num < 10) {
-		    print(num);
-		    num += 1;
+		while (i < 10) {
+		    print(i);
+		    i += 1;
 		}
 	    }
     `d.strip);

@@ -20,8 +20,9 @@ class RepeatRule : Rule {
 		}
 		str ~= match.str;
 	    }
+	    // 0こにもマッチ
 	    if (str.length == 0) {
-		return null;
+		return new MatchResult("", prevPos);
 	    }
 	    return new MatchResult(str, prevPos);
 	}
