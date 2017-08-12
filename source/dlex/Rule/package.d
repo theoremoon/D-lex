@@ -68,6 +68,9 @@ auto Pred(bool function(dchar) pred) {
 auto Select(Rule[] rules ...) {
     return new SelectRule(rules);
 }
+auto Between(Rule beginRule, Rule endRule, Rule innerRule) {
+    return new BetweenRule(beginRule, endRule, innerRule);
+}
 
 public import dlex.Rule.AnyRule,
        dlex.Rule.CharRule,
@@ -75,5 +78,6 @@ public import dlex.Rule.AnyRule,
        dlex.Rule.PredicateRule,
        dlex.Rule.SeqRule,
        dlex.Rule.SelectRule,
-       dlex.Rule.RepeatRule;
+       dlex.Rule.RepeatRule,
+       dlex.Rule.BetweenRule;
 
