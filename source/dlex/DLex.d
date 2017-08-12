@@ -134,8 +134,8 @@ unittest {
     }
     auto dlex = new DLex!(Type);
     dlex.Rules([
-	    dlex.RuleT(Type.Space, Select(Char(' '), Char('\t')).Skip),
-	    dlex.RuleT(Type.Newline, Select(Char('\n'), Char(';')).Repeat),
+	    dlex.RuleT(Type.Space, (Char(' ') | Char('\t')).Skip),
+	    dlex.RuleT(Type.Newline, (Char('\n') | Char(';')).Repeat),
 	    dlex.RuleT(Type.Number, Pred(&isNumber).Repeat),
 	    dlex.RuleT(Type.Identifier, Pred((c) => (c == '_' || c.isAlpha))+Pred((c) => (c == '_' || c.isAlphaNum)).Repeat),
 	    dlex.RuleT(Type.String, Char('"')+Pred((c) => c != '"').Then(delegate(MatchResult r, dstring s, ref Position p) {

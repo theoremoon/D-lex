@@ -30,6 +30,9 @@ abstract class Rule {
 	    static if (op == "+") {
 		return new SeqRule(this, rhs);
 	    }
+	    else static if (op == "|") {
+		return new SelectRule([this, rhs]);
+	    }
 	    else {
 		static assert(0, "operator " ~ op ~ " not implemented");
 	    }
