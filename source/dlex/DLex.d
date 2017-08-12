@@ -37,7 +37,7 @@ template DLex(Type) {
 		    Matched[] rs = [];
 		    foreach (rule; rules) {
 			auto savePos = pos;
-			MatchResult r = rule.rule.match2(source, savePos);
+			MatchResult r = rule.rule.matched(source, savePos);
 			if (r && r.str.length > 0) { // 0文字でマッチし得る
 			    rs ~= Matched(r, savePos, rule.type, rule.rule.skip); 
 			}

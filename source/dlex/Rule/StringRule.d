@@ -21,6 +21,6 @@ class StringRule : Rule {
 	    }
 	}
 	override MatchResult match(dstring source, ref Position pos) {
-	    return rule.match(source, pos);
+	    return rule.matched(source, pos);
 	}
 }

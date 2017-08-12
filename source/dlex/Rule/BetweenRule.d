@@ -17,7 +17,7 @@ class BetweenRule : Rule {
 	    auto prevPos = pos;
 	    
 	    // begin がマッチ
-	    auto beginR = beginRule.match(source, pos);
+	    auto beginR = beginRule.matched(source, pos);
 	    if (!beginR) {
 		pos = prevPos;
 		return null;
@@ -27,7 +27,7 @@ class BetweenRule : Rule {
 	    while (true) {
 		auto save = pos;
 		// end がマッチしたら返る
-		auto endR = endRule.match(source, pos);
+		auto endR = endRule.matched(source, pos);
 		if (endR) {
 		    str ~= endR.str;
 		    break;
@@ -35,7 +35,7 @@ class BetweenRule : Rule {
 		pos = save;
 
 		// innerがマッチしなかったらそもそもダメ
-		auto innerR = innerRule.match(source, pos);
+		auto innerR = innerRule.matched(source, pos);
 		if (! innerR) {
 		    pos = prevPos;
 		    return null;

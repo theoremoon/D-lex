@@ -13,11 +13,11 @@ class SeqRule : Rule {
 	}
 	override MatchResult match(dstring source, ref Position pos) {
 	    auto prevPos = pos;
-	    auto prevMatch = prevRule.match(source, pos);
+	    auto prevMatch = prevRule.matched(source, pos);
 	    if (! prevMatch) {
 		return null;
 	    }
-	    auto postMatch = postRule.match(source, pos);
+	    auto postMatch = postRule.matched(source, pos);
 	    if (! postMatch) {
 		pos = prevPos;
 		return null;

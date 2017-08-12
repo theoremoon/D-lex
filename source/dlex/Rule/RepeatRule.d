@@ -14,11 +14,11 @@ class RepeatRule : Rule {
 	    auto prevPos = pos;
 	    dstring str = "";
 	    while (true) {
-		auto match = rule.match(source, pos);
-		if (! match) {
+		auto r = rule.matched(source, pos);
+		if (! r) {
 		    break;
 		}
-		str ~= match.str;
+		str ~= r.str;
 	    }
 	    // 0こにもマッチ
 	    if (str.length == 0) {
