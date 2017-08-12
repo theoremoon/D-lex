@@ -139,7 +139,8 @@ unittest {
 	    dlex.RuleT(Type.Number, Pred(&isNumber).Repeat),
 	    dlex.RuleT(Type.Identifier, Pred((c) => (c == '_' || c.isAlpha))+Pred((c) => (c == '_' || c.isAlphaNum)).Repeat),
 	    dlex.RuleT(Type.String, Between(Char('"'), Char('"'), Any)),
-	    dlex.RuleT(Type.Symbol, Char('=')),
+	    dlex.RuleT(Type.Symbol, Char('=').As(delegate(dstring s) { return "=="d; })),
+	    // dlex.RuleT(Type.Symbol, Char('=')),
 	    dlex.RuleT(Type.Symbol, Char('+')),
 	    dlex.RuleT(Type.Symbol, Char('<')),
 	    dlex.RuleT(Type.Symbol, String("+=")),
@@ -168,7 +169,7 @@ unittest {
     assert(rs[5].type == Type.Newline);
     assert(rs[5].str == "\n");
     assert(rs[8].type == Type.Symbol);
-    assert(rs[8].str == "=");
+    assert(rs[8].str == "==");
     assert(rs[9].type == Type.Number);
     assert(rs[9].str == "1");
     assert(rs[10].type == Type.Newline);

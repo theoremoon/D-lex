@@ -5,21 +5,25 @@ public import dlex.MatchResult,
 
 abstract class Rule {
     public:
+	alias ProcessFunc = dstring delegate(dstring);
+
 	bool skip = false;
+	ProcessFunc processFunc;
 	this() {
-	    matchfunc = null;
+	    processFunc = null;
 	}
 
 	MatchResult match(dstring source, ref Position pos);
 	MatchResult matched(dstring source, ref Position pos) {
 	    auto r = match(source, pos);
-	    if (matchfunc) {
-		auto save = pos;
-		auto r2 = matchfunc(r, source, pos);
+	    if (!r) {
+		return null;
+	    }
+	    if (processFunc) {
+		auto r2 = processFunc(r.str);
 		if (r2) {
-		    return r2;
+		    return new MatchResult(r2, r.pos);
 		}
-		pos = save;
 	    }
 	    return r;
 	}
@@ -42,6 +46,11 @@ abstract class Rule {
 
 	Rule Skip() {
 	    this.skip = true;
+	    return this;
+	}
+
+	Rule As(ProcessFunc f) {
+	    this.processFunc = f;
 	    return this;
 	}
 }
