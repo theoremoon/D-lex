@@ -6,14 +6,12 @@ public import dlex.MatchResult,
 abstract class Rule {
     public:
 	bool skip = false;
-	alias MatchFuncT = MatchResult delegate(MatchResult, dstring, ref Position);
-	MatchFuncT matchfunc; 
 	this() {
 	    matchfunc = null;
 	}
 
 	MatchResult match(dstring source, ref Position pos);
-	MatchResult match2(dstring source, ref Position pos) {
+	MatchResult matched(dstring source, ref Position pos) {
 	    auto r = match(source, pos);
 	    if (matchfunc) {
 		auto save = pos;
@@ -44,11 +42,6 @@ abstract class Rule {
 
 	Rule Skip() {
 	    this.skip = true;
-	    return this;
-	}
-
-	Rule Then(MatchFuncT f) {
-	    matchfunc = f;
 	    return this;
 	}
 }
