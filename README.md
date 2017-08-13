@@ -22,7 +22,7 @@ this is
 
 ## Usage
 
-See unittest in source/dlex/DLex.d.
+See unittest in source/dlex/test.d
 
 ```d
     enum Type {
