@@ -1,3 +1,3 @@
 module dlex;
 
-import dlex.DLex;
+public import dlex.DLex, dlex.Rule;
