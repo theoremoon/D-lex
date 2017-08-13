@@ -4,7 +4,7 @@ struct Position { // for copy constructor
     public:
 	int p = 0;
 	int col = 1;
-	int row = 1;
+	int line = 1;
 
 	bool end(dstring src) {
 	    return p >= src.length;
@@ -14,7 +14,7 @@ struct Position { // for copy constructor
 	    col++;
 	    if (c == '\n') {
 		col = 0;
-		row++;
+		line++;
 	    }
 	}
 	dchar next(dstring src) {
