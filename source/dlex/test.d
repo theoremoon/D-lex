@@ -75,14 +75,14 @@ unittest {
 	    dlex.RuleT(Type.Symbol, Char(')')),
     ]);
     auto rs = dlex.Lex(`
-	    int main() {
-		int i = 1;
-		print("Start\"");
-		while (i < 10) {
-		    print(i);
-		    i += 1;
-		}
-	    }
+int main() {
+    int i = 1;
+    print("Start\"");
+    while (i < 10) {
+	print(i);
+	i += 1;
+    }
+}
     `d.strip);
 
     assert(rs[0].type == Type.Identifier);
@@ -101,6 +101,8 @@ unittest {
     assert(rs[10].str == ";\n");
     assert(rs[13].type == Type.String);
     assert(rs[13].str == "Start\"");
+    assert(rs[13].pos.row == 3);
+    assert(rs[13].pos.col == 10);
     assert(rs[30].type == Type.Symbol);
     assert(rs[30].str == "+=");
 }
