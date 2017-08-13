@@ -138,9 +138,8 @@ unittest {
 	    dlex.RuleT(Type.Newline, (Char('\n') | Char(';')).Repeat),
 	    dlex.RuleT(Type.Number, Pred(&isNumber).Repeat),
 	    dlex.RuleT(Type.Identifier, Pred((c) => (c == '_' || c.isAlpha))+Pred((c) => (c == '_' || c.isAlphaNum)).Repeat),
-	    dlex.RuleT(Type.String, Between(Char('"'), Char('"'), Any)),
-	    dlex.RuleT(Type.Symbol, Char('=').As(delegate(dstring s) { return "=="d; })),
-	    // dlex.RuleT(Type.Symbol, Char('=')),
+	    dlex.RuleT(Type.String, Between(Char('"'), Char('"'), String(`\"`).As((dstring s) => `"`d)|Any).As((dstring s) => s[1..$-1])),
+	    dlex.RuleT(Type.Symbol, Char('=')),
 	    dlex.RuleT(Type.Symbol, Char('+')),
 	    dlex.RuleT(Type.Symbol, Char('<')),
 	    dlex.RuleT(Type.Symbol, String("+=")),
@@ -152,7 +151,7 @@ unittest {
     auto rs = dlex.Lex(`
 	    int main() {
 		int i = 1;
-		print("Start");
+		print("Start\"");
 		while (i < 10) {
 		    print(i);
 		    i += 1;
@@ -169,13 +168,13 @@ unittest {
     assert(rs[5].type == Type.Newline);
     assert(rs[5].str == "\n");
     assert(rs[8].type == Type.Symbol);
-    assert(rs[8].str == "==");
+    assert(rs[8].str == "=");
     assert(rs[9].type == Type.Number);
     assert(rs[9].str == "1");
     assert(rs[10].type == Type.Newline);
     assert(rs[10].str == ";\n");
     assert(rs[13].type == Type.String);
-    assert(rs[13].str == "\"Start\"");
+    assert(rs[13].str == "Start\"");
     assert(rs[30].type == Type.Symbol);
     assert(rs[30].str == "+=");
 }
