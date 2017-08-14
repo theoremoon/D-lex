@@ -6,5 +6,5 @@
 	"targetType": "library",
 	"description": "lexer generator application for d",
 	"copyright": "Copyright © 2017, theoldmoon0602",
-	"license": "MIT2.0"
+	"license": "MIT"
 }
