@@ -58,6 +58,9 @@ template DLex(Type) {
 		    }
 		    pos = result.pos;
 		}
+		if (!pos.end(source)) {
+		    throw new Exception("Lex rules did not fully matched input string");
+		}
 
 		return results;
 	    }

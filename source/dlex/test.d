@@ -106,3 +106,24 @@ int main() {
     assert(rs[30].type == Type.Symbol);
     assert(rs[30].str == "+=");
 }
+
+unittest {
+    enum Type {
+	Ident,
+	Number,
+	Space,
+	Symbol,
+    }
+
+    import std.uni;
+    import std.exception;
+
+    auto dlex = new DLex!(Type);
+    dlex.Rules([
+            dlex.RuleT(Type.Ident, Pred(&isAlpha) + Pred(&isAlphaNum).Repeat),
+            dlex.RuleT(Type.Number, Pred(&isNumber).Repeat),
+            dlex.RuleT(Type.Space, Pred(&isSpace).Skip),
+    ]);
+    assertThrown(dlex.Lex("Int 123 *"));
+
+}
