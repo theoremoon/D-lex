@@ -16,15 +16,13 @@ Lexical analyzer implemented by D-lang.
 
 this is 
 
-＿人人人人＿
-
-＞　T-rex　＜
-
+＿人人人人＿\
+＞　T-rex　＜\
 ￣Y^Y^Y^Y^￣
 
 ## Usage
 
-See unittest in source/dlex/DLex.d.
+See unittest in source/dlex/test.d
 
 ```d
     enum Type {
