@@ -11,6 +11,18 @@ import dlex.Rule;
 
 template DLex(Type) {
     class DLex {
+	class LexResult {
+	    public:
+		Type type;
+		dstring str;
+		Position pos;
+
+		this (Type type, dstring str, Position pos) {
+		    this.type = type;
+		    this.str = str;
+		    this.pos = pos;
+		}
+	}
 	public:
 	    struct RuleT {
 		Type type;
@@ -63,18 +75,6 @@ template DLex(Type) {
 		}
 
 		return results;
-	    }
-    }
-    class LexResult {
-	public:
-	    Type type;
-	    dstring str;
-	    Position pos;
-
-	    this (Type type, dstring str, Position pos) {
-		this.type = type;
-		this.str = str;
-		this.pos = pos;
 	    }
     }
 }
